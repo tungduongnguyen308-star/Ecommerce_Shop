@@ -1,0 +1,30 @@
+name: smartshop-tx1
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: smartshop-mysql
+    environment:
+      MYSQL_DATABASE: smartshop_tx1
+      MYSQL_USER: smartshop
+      MYSQL_PASSWORD: smartshop123
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/tx1_smartshop.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot123 --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 25
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: smartshop-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+volumes:
+  mysql_data:
+  qdrant_data:

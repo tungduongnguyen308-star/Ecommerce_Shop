@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <title>Quản lý sản phẩm · Ecommerce Shop</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" th:href="@{/css/smartshop.css}" href="/css/smartshop.css" />
+  <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}" href="/css/admin-dashboard.css" />
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <input class="admin-sidebar-toggle" id="admin-sidebar-toggle" type="checkbox" aria-label="Mở menu quản trị" />
+  <aside th:replace="~{admin/sidebar :: sidebar('products')}"></aside>
+  <label for="admin-sidebar-toggle" class="admin-sidebar-backdrop" aria-hidden="true"></label>
+  <div class="admin-workspace">
+    <header class="admin-topbar">
+      <div class="admin-topbar-left">
+        <label for="admin-sidebar-toggle" class="admin-mobile-menu" aria-label="Mở điều hướng">☰</label>
+        <div>
+          <div class="admin-topbar-breadcrumb">Ecommerce Shop <span>/</span> Sản phẩm</div>
+          <strong>Sản phẩm</strong>
+        </div>
+      </div>
+      <a class="admin-topbar-shop" th:href="@{/}">↗ <span>Xem cửa hàng</span></a>
+    </header>
+    <main class="admin-page">
+      <div th:if="${success}" class="alert alert-success" role="status" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+<section class="admin-page-heading">
+  <div><p class="admin-eyebrow">QUẢN LÝ KHO HÀNG</p><h1>Quản lý sản phẩm</h1>
+    <p class="admin-muted mb-0">Xem, thêm, chỉnh sửa và quản lý sản phẩm của cửa hàng.</p></div>
+  <a th:href="@{/admin/products/new}" class="btn btn-primary">+ Thêm sản phẩm</a>
+</section>
+<section class="admin-panel">
+  <div class="admin-panel-heading"><div><h2>Danh sách sản phẩm</h2><p>Cập nhật giá, tồn kho và trạng thái hiển thị</p></div></div>
+  <div class="table-responsive" th:if="${!products.empty}">
+    <table class="table admin-table align-middle">
+      <thead><tr><th>ID</th><th>Sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Tồn kho</th><th>Hiển thị</th><th>Thao tác</th></tr></thead>
+      <tbody><tr th:each="p : ${products}">
+        <td th:text="${p.id}">1</td>
+        <td><div class="admin-product-cell"><img class="admin-product-photo" th:src="${p.imageUrl}" th:alt="${p.name}" alt="Sản phẩm" />
+          <strong th:text="${p.name}">Tên sản phẩm</strong></div></td>
+        <td th:text="${p.categoryName}">Danh mục</td>
+        <td class="fw-semibold" th:text="${#numbers.formatDecimal(p.price,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</td>
+        <td th:text="${p.stock}">0</td>
+        <td><span class="admin-status" th:classappend="${p.active} ? ' admin-status-active' : ' admin-status-off'" th:text="${p.active} ? 'Đang bán' : 'Đã ẩn'">Đang bán</span></td>
+        <td><div class="admin-row-actions">
+          <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/products/{id}/edit(id=${p.id})}">Sửa</a>
+          <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post" onsubmit="return confirm('Bạn muốn xóa sản phẩm này?');">
+            <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
+          </form>
+        </div></td>
+      </tr></tbody>
+    </table>
+  </div>
+  <div class="admin-empty" th:if="${products.empty}">Chưa có sản phẩm nào.</div>
+</section>
+<section class="admin-panel admin-categories-quickadd">
+  <div class="admin-panel-heading"><div><h2>Thêm danh mục</h2><p>Thêm nhóm sản phẩm mới khi cần</p></div></div>
+  <form th:action="@{/admin/categories}" method="post" class="d-flex flex-wrap gap-2">
+    <input class="form-control admin-new-category-input" name="name" required maxlength="120" placeholder="Tên danh mục" />
+    <button class="btn btn-primary" type="submit">Thêm danh mục</button>
+  </form>
+</section>
+    </main>
+    <div class="admin-page-footer">© Ecommerce Shop</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Sản phẩm')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<div th:replace="~{fragments :: alerts}"></div>
+<!-- bố cục nút giỏ hàng cho thẻ sản phẩm trên trang /products -->
+<style>
+  .catalog-results .product-card { display: flex; flex-direction: column; height: 100%; }
+  .catalog-results .product-card > a { display: block; }
+  .catalog-results .product-info { display: flex; flex-direction: column; flex: 1; }
+  .catalog-results .catalog-buy-area { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 18px; }
+  .catalog-results .catalog-stock { font-size: .9rem; font-weight: 500; color: #66738e; }
+  .catalog-results .catalog-add-form { display: flex; justify-content: center; width: 100%; margin: 0; }
+  .catalog-results .catalog-cart-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    width: min(88%, 260px); min-height: 48px;
+    padding: 10px 16px; border: 1px solid #315efb; border-radius: 999px;
+    background: #315efb; color: #fff; font-size: 1.02rem; font-weight: 750;
+    line-height: 1.25; white-space: nowrap;
+    box-shadow: 0 7px 16px rgba(49,94,251,.18);
+    transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .catalog-results .catalog-cart-button:hover:not(:disabled) {
+    background: #244ce0; border-color: #244ce0; transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(49,94,251,.25);
+  }
+  .catalog-results .catalog-cart-button:focus-visible { outline: 3px solid #8aabff; outline-offset: 3px; }
+  .catalog-results .catalog-cart-button:disabled { background: #9ca9c2; border-color: #9ca9c2; box-shadow: none; }
+  .catalog-results .catalog-cart-button svg { flex: 0 0 auto; }
+  @media (max-width: 420px) { .catalog-results .catalog-cart-button { width: 96%; font-size: .98rem; } }
+  @media (prefers-reduced-motion: reduce) { .catalog-results .catalog-cart-button { transition: none; } }
+</style>
+<main class="container catalog-page section-pad catalog-page-with-header-search">
+  <div class="catalog-top-heading">
+    <div><div class="eyebrow text-primary">ECOMMERCE SHOP</div>
+      <h1 th:text="${selectedCategoryName != null ? selectedCategoryName : 'Tất cả các sản phẩm của cửa hàng'}">Tất cả các sản phẩm của cửa hàng</h1>
+      <p>Thiết bị công nghệ, điện máy và phụ kiện dành cho bạn</p></div>
+    <span class="catalog-result-count" th:text="${products.size()}+' sản phẩm'">0 sản phẩm</span>
+  </div>
+  <div th:if="${searchWarning}" class="alert alert-warning" th:text="${searchWarning}"></div>
+  <div class="catalog-layout">
+    <aside class="catalog-sidebar" aria-label="Lọc theo danh mục">
+      <div class="catalog-sidebar-title">Danh mục</div>
+      <nav class="catalog-category-list" aria-label="Các danh mục sản phẩm">
+        <a th:href="@{/products(keyword=${keyword})}" class="catalog-category-link"
+           th:classappend="${categoryId == null} ? 'active' : ''"><span>Tất cả sản phẩm</span><span aria-hidden="true">›</span></a>
+        <a th:each="c : ${categories}" th:href="@{/products(categoryId=${c.id},keyword=${keyword})}"
+           class="catalog-category-link" th:classappend="${categoryId != null and categoryId == c.id} ? 'active' : ''">
+          <span th:text="${c.name}">Danh mục</span><span aria-hidden="true">›</span>
+        </a>
+      </nav>
+    </aside>
+    <section class="catalog-results" aria-label="Danh sách sản phẩm">
+      <div class="catalog-results-bar">
+        <div th:if="${selectedCategoryName != null}">Danh mục: <strong th:text="${selectedCategoryName}">Điện máy</strong></div>
+        <div th:if="${selectedCategoryName == null}">Khám phá sản phẩm</div>
+        <a th:if="${categoryId != null or (keyword != null and !keyword.isBlank())}" th:href="@{/products}">Xóa bộ lọc ×</a>
+      </div>
+      <div th:if="${keyword != null and !keyword.isBlank()}" class="catalog-keyword-note">Từ khóa: <strong th:text="${keyword}">máy giặt</strong></div>
+      <div th:if="${products.empty}" class="empty-state">Chưa có sản phẩm phù hợp. <a th:href="@{/products}">Xem tất cả sản phẩm</a>.</div>
+      <div class="row g-3">
+        <div class="col-sm-6 col-xl-4" th:each="p : ${products}">
+          <div class="product-card">
+            <a th:href="@{/products/{id}(id=${p.id})}">
+              <img th:src="${p.imageUrl}" th:alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='/img/catalog-products/placeholder.webp';">
+            </a>
+            <div class="product-info">
+              <span class="tiny-label" th:text="${p.categoryName}">Danh mục</span>
+              <a class="product-name" th:href="@{/products/{id}(id=${p.id})}" th:text="${p.name}">Tên</a>
+              <div class="price" th:text="${#numbers.formatDecimal(p.price,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</div>
+              <div class="catalog-buy-area">
+                <small class="catalog-stock" th:text="'Còn '+${p.stock}+' sản phẩm'">Còn hàng</small>
+                <form class="catalog-add-form" th:action="@{/cart/add}" method="post">
+                  <input type="hidden" name="productId" th:value="${p.id}">
+                  <button class="btn btn-primary catalog-cart-button" type="submit" th:disabled="${p.stock == 0}">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                      <path d="M1 1h4l2.4 12.2a2 2 0 0 0 2 1.6h9.6a2 2 0 0 0 2-1.6L23 6H6"/>
+                    </svg>
+                    <span>Thêm vào giỏ</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body></html>

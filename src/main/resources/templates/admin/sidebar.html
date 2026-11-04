@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside class="admin-sidebar" th:fragment="sidebar(activePage)" aria-label="Điều hướng quản trị">
+  <div class="admin-sidebar-brand">
+    <a th:href="@{/admin}" class="admin-brand-link" aria-label="Ecommerce Shop - Trang quản trị">
+      <span class="admin-brand-mark">◇</span>
+      <span>Ecommerce <b>Shop</b></span>
+    </a>
+    <small>QUẢN LÝ CỬA HÀNG</small>
+  </div>
+  <nav class="admin-sidebar-menu" aria-label="Menu quản trị">
+    <a th:href="@{/admin}" th:classappend="${activePage == 'overview'} ? ' is-active' : ''" >
+      <span class="admin-menu-icon" aria-hidden="true">▦</span><span>Tổng quan</span>
+    </a>
+    <a th:href="@{/admin/products}" th:classappend="${activePage == 'products'} ? ' is-active' : ''">
+      <span class="admin-menu-icon" aria-hidden="true">▣</span><span>Sản phẩm</span>
+    </a>
+    <a th:href="@{/admin/orders}" th:classappend="${activePage == 'orders'} ? ' is-active' : ''">
+      <span class="admin-menu-icon" aria-hidden="true">▤</span><span>Đơn hàng</span>
+    </a>
+    <a th:href="@{/admin/customers}" th:classappend="${activePage == 'customers'} ? ' is-active' : ''">
+      <span class="admin-menu-icon" aria-hidden="true">♙</span><span>Khách hàng</span>
+    </a>
+  </nav>
+  <div class="admin-sidebar-bottom">
+    <div class="admin-user">
+      <span class="admin-user-avatar">A</span>
+      <span><strong>Quản trị viên</strong><small>Quản lý cửa hàng</small></span>
+    </div>
+    <a th:href="@{/}" class="admin-side-secondary"><span aria-hidden="true">↖</span> Về cửa hàng</a>
+    <form th:action="@{/logout}" method="post" class="admin-logout-form">
+      <button class="admin-side-secondary" type="submit"><span aria-hidden="true">⏻</span> Đăng xuất</button>
+    </form>
+  </div>
+</aside>
+</body>
+</html>

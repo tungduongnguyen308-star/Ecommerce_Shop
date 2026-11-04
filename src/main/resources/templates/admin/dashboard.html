@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <title>Tổng quan · Ecommerce Shop</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" th:href="@{/css/smartshop.css}" href="/css/smartshop.css" />
+  <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}" href="/css/admin-dashboard.css" />
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <input class="admin-sidebar-toggle" id="admin-sidebar-toggle" type="checkbox" aria-label="Mở menu quản trị" />
+  <aside th:replace="~{admin/sidebar :: sidebar('overview')}"></aside>
+  <label for="admin-sidebar-toggle" class="admin-sidebar-backdrop" aria-hidden="true"></label>
+  <div class="admin-workspace">
+    <header class="admin-topbar">
+      <div class="admin-topbar-left">
+        <label for="admin-sidebar-toggle" class="admin-mobile-menu" aria-label="Mở điều hướng">☰</label>
+        <div>
+          <div class="admin-topbar-breadcrumb">Ecommerce Shop <span>/</span> Tổng quan</div>
+          <strong>Tổng quan</strong>
+        </div>
+      </div>
+      <a class="admin-topbar-shop" th:href="@{/}">↗ <span>Xem cửa hàng</span></a>
+    </header>
+    <main class="admin-page">
+      <div th:if="${success}" class="alert alert-success" role="status" th:text="${success}"></div>
+      <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+<section class="admin-page-heading">
+  <div>
+    <p class="admin-eyebrow">TỔNG QUAN CỬA HÀNG</p>
+    <h1>Xin chào, quản trị viên <span class="admin-greet">👋</span></h1>
+    <p class="admin-muted mb-0">Theo dõi tình hình kinh doanh và quản lý cửa hàng tại một nơi.</p>
+  </div>
+  <div class="admin-heading-actions">
+    <a th:href="@{/admin/products/new}" class="btn btn-primary">+ Thêm sản phẩm</a>
+  </div>
+</section>
+<section class="admin-stats" aria-label="Thống kê cửa hàng">
+  <a class="admin-stat-card admin-stat-blue" th:href="@{/admin/products}">
+    <div class="admin-stat-top"><span>Sản phẩm</span><span class="admin-stat-symbol" aria-hidden="true">▣</span></div>
+    <strong th:text="${productCount}">0</strong><small>Đang quản lý</small>
+  </a>
+  <a class="admin-stat-card admin-stat-violet" th:href="@{/admin/orders}">
+    <div class="admin-stat-top"><span>Đơn hàng</span><span class="admin-stat-symbol" aria-hidden="true">▤</span></div>
+    <strong th:text="${orderCount}">0</strong><small>Đã ghi nhận</small>
+  </a>
+  <a class="admin-stat-card admin-stat-amber" th:href="@{/admin/products}">
+    <div class="admin-stat-top"><span>Sắp hết hàng</span><span class="admin-stat-symbol" aria-hidden="true">!</span></div>
+    <strong th:text="${lowStockCount}">0</strong><small>Ưu tiên bổ sung tồn kho</small>
+  </a>
+  <div class="admin-stat-card admin-stat-green">
+    <div class="admin-stat-top"><span>Doanh thu hoàn tất</span><span class="admin-stat-symbol" aria-hidden="true">₫</span></div>
+    <strong class="admin-revenue" th:text="${#numbers.formatDecimal(revenue,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</strong>
+    <small>Từ các đơn đã hoàn thành</small>
+  </div>
+</section>
+<section class="admin-panel admin-recent-orders">
+  <div class="admin-panel-heading">
+    <div><h2>Đơn hàng gần đây</h2><p>Danh sách các đơn hàng mới nhất</p></div>
+    <a class="btn btn-outline-primary btn-sm" th:href="@{/admin/orders}">Xem tất cả →</a>
+  </div>
+  <div class="table-responsive" th:if="${!orders.empty}">
+    <table class="table admin-table align-middle">
+      <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày tạo</th></tr></thead>
+      <tbody><tr th:each="o : ${orders}">
+        <td class="fw-bold" th:text="'DH-' + ${o.id}">DH-1</td>
+        <td th:text="${o.customerName}">Khách hàng</td>
+        <td class="fw-semibold" th:text="${#numbers.formatDecimal(o.total,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</td>
+        <td><span class="admin-status" th:text="${o.status}">PENDING</span></td>
+        <td th:text="${#temporals.format(o.createdAt,'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+      </tr></tbody>
+    </table>
+  </div>
+  <div class="admin-empty" th:if="${orders.empty}">Chưa có đơn hàng nào.</div>
+</section>
+<section class="admin-shortcuts" aria-label="Tác vụ nhanh">
+  <div class="admin-panel">
+    <div class="admin-panel-heading"><div><h2>Thao tác nhanh</h2><p>Những công việc thường sử dụng</p></div></div>
+    <div class="admin-shortcut-links">
+      <a th:href="@{/admin/products}"><span>▣</span> Quản lý sản phẩm <b>→</b></a>
+      <a th:href="@{/admin/orders}"><span>▤</span> Quản lý đơn hàng <b>→</b></a>
+      <a th:href="@{/admin/customers}"><span>♙</span> Danh sách khách hàng <b>→</b></a>
+    </div>
+  </div>
+  <div class="admin-panel">
+    <div class="admin-panel-heading"><div><h2>Đồng bộ tìm kiếm</h2><p>Cập nhật dữ liệu sản phẩm vào công cụ tìm kiếm</p></div></div>
+    <form method="post" th:action="@{/admin/qdrant/sync}" class="admin-sync-form">
+      <button type="submit" class="btn btn-primary">↻ Đồng bộ sản phẩm</button>
+    </form>
+  </div>
+</section>
+    </main>
+    <div class="admin-page-footer">© Ecommerce Shop</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
