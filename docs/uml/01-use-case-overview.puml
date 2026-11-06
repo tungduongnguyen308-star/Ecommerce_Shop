@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+actor "Khách hàng" as Buyer
+actor "Quản trị viên" as Admin
+rectangle "Ecommerce_Shop" {
+  (Xem sản phẩm / chi tiết) as UC1
+  (Tìm kiếm & lọc danh mục) as UC2
+  (Quản lý giỏ hàng) as UC3
+  (Thêm vào giỏ) as UC3a
+  (Cập nhật / xóa dòng giỏ) as UC3b
+  (Đặt hàng) as UC4
+  (Đăng nhập quản trị) as UC5
+  (Quản lý sản phẩm CRUD) as UC6
+  (Quản lý đơn hàng) as UC7
+  (Xem Dashboard) as UC8
+  (Xem khách hàng) as UC9
+  (Đồng bộ Qdrant) as UC10
+  (Tìm bằng vector Qdrant) as UC11
+}
+Buyer --> UC1
+Buyer --> UC2
+Buyer --> UC3
+Buyer --> UC4
+Buyer --> UC11
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+UC3a .> UC3 : <<extend>>
+UC3b .> UC3 : <<extend>>
+UC4 .> UC3 : <<include>>
+note right of UC11
+  Hash vector từ khóa (không phải AI semantic search).
+  Không có chatbot / LLM.
+end note
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+actor "Quản trị viên" as Admin
+rectangle "Quản lý sản phẩm" {
+  (Xem danh sách sản phẩm) as List
+  (Thêm sản phẩm) as Create
+  (Sửa sản phẩm) as Update
+  (Xóa sản phẩm) as Delete
+  (Kiểm tra dữ liệu nhập) as Validate
+}
+Admin --> List
+Admin --> Create
+Admin --> Update
+Admin --> Delete
+Create .> Validate : <<include>>
+Update .> Validate : <<include>>
+@enduml

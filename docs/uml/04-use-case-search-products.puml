@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+actor "Khách hàng" as Buyer
+actor "Quản trị viên" as Admin
+rectangle "Tra cứu sản phẩm" {
+  (Tìm theo từ khóa MySQL) as SQL
+  (Lọc theo danh mục) as Filter
+  (Tìm bằng Qdrant vector) as V
+  (Đồng bộ chỉ mục Qdrant) as Sync
+  (Hiển thị kết quả từ MySQL) as Data
+}
+Buyer --> SQL
+Buyer --> Filter
+Buyer --> V
+Admin --> Sync
+SQL .> Data : <<include>>
+V .> Data : <<include>>
+note right of V
+ Chỉ trả về danh sách sản phẩm;
+ chưa có hội thoại AI.
+end note
+@enduml

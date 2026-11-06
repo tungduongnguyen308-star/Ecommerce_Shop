@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+actor "Khách hàng" as Buyer
+rectangle "Đặt hàng - Ecommerce_Shop" {
+  (Xem giỏ hàng) as Cart
+  (Thêm sản phẩm) as Add
+  (Thay đổi số lượng) as Qty
+  (Xóa sản phẩm) as Remove
+  (Nhập thông tin giao hàng) as Enter
+  (Xác nhận đặt hàng) as Confirm
+  (Kiểm tra tồn kho) as Stock
+  (Lưu đơn hàng) as Save
+}
+Buyer --> Cart
+Buyer --> Add
+Buyer --> Qty
+Buyer --> Remove
+Buyer --> Enter
+Buyer --> Confirm
+Confirm .> Stock : <<include>>
+Confirm .> Save : <<include>>
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+package "Presentation Layer" {
+ [Thymeleaf + Bootstrap 5]
+ [Spring MVC Controller]
+}
+package "Business Layer" {
+ interface ProductService
+ interface OrderService
+ interface CatalogSearchService
+ [ProductServiceImpl]
+ [OrderServiceImpl]
+ [CatalogSearchServiceImpl]
+}
+package "Data Access Layer" {
+ interface ProductDao
+ interface OrderDao
+ [JdbcProductDao]
+ [JdbcOrderDao]
+ [QdrantGateway]
+}
+database "MySQL" as MySQL
+database "Qdrant (tùy chọn)" as Qdrant
+[Thymeleaf + Bootstrap 5] --> [Spring MVC Controller]
+[Spring MVC Controller] --> ProductService
+[Spring MVC Controller] --> OrderService
+[Spring MVC Controller] --> CatalogSearchService
+ProductService <|.. [ProductServiceImpl]
+OrderService <|.. [OrderServiceImpl]
+CatalogSearchService <|.. [CatalogSearchServiceImpl]
+[ProductServiceImpl] --> ProductDao
+[OrderServiceImpl] --> ProductDao
+[OrderServiceImpl] --> OrderDao
+[CatalogSearchServiceImpl] --> ProductService
+[CatalogSearchServiceImpl] --> [QdrantGateway]
+ProductDao <|.. [JdbcProductDao]
+OrderDao <|.. [JdbcOrderDao]
+[JdbcProductDao] --> MySQL
+[JdbcOrderDao] --> MySQL
+[QdrantGateway] --> Qdrant
+note right of Qdrant
+ Tìm kiếm vector hash từ khóa;
+ chưa có chatbot, Ollama hoặc LLM.
+end note
+@enduml

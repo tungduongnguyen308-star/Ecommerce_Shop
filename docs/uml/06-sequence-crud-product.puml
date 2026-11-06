@@ -1,0 +1,22 @@
+@startuml
+autonumber
+actor "Quản trị viên" as Admin
+boundary "AdminController" as C
+control "ProductServiceImpl" as S
+entity "JdbcProductDao" as D
+database "MySQL" as DB
+Admin -> C: POST /admin/products
+C -> C: @Valid ProductForm
+alt Dữ liệu không hợp lệ
+ C --> Admin: Form + thông báo từng trường
+else Hợp lệ
+ C -> S: create(productForm)
+ S -> S: validate business rules
+ S -> D: insert(product)
+ D -> DB: INSERT products (?, ?, ...)
+ DB --> D: generatedKey
+ D --> S: productId
+ S --> C: productId
+ C --> Admin: Redirect /admin/products
+end
+@enduml
