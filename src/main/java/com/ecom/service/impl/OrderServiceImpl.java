@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -43,6 +44,8 @@ public class OrderServiceImpl implements OrderService {
         return orderId;
     }
     @Override public List<OrderSummary> listAll(){return orders.findAll();}
+    @Override public List<OrderSummary> listForCustomer(long customerUserId){return orders.findByCustomerUserId(customerUserId);}
+    @Override public Optional<OrderSummary> findForCustomer(long orderId,long customerUserId){return orders.findByIdAndCustomerUserId(orderId,customerUserId);}
     @Override public List<OrderItem> getItems(long orderId){return orders.findItems(orderId);}
     @Override @Transactional public void setStatus(long orderId,String status){
         if(!ALLOWED.contains(status))throw new BusinessException("Trạng thái đơn hàng không hợp lệ");

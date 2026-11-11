@@ -34,6 +34,16 @@ class OrderServiceImplTest {
         verify(products).decreaseStock(1L,2);
         verify(orders).insertItem(eq(25L),argThat(i->i.quantity()==2 && i.lineTotal().compareTo(new BigDecimal("30000000"))==0));
     }
+    @Test void customerHistoryIsScopedToTheRequestedCustomer(){
+        when(orders.findByCustomerUserId(42L)).thenReturn(List.of());
+        assertTrue(service.listForCustomer(42L).isEmpty());
+        verify(orders).findByCustomerUserId(42L);
+    }
+    @Test void customerOrderDetailUsesBothOrderAndCustomerIds(){
+        when(orders.findByIdAndCustomerUserId(25L,42L)).thenReturn(Optional.empty());
+        assertTrue(service.findForCustomer(25L,42L).isEmpty());
+        verify(orders).findByIdAndCustomerUserId(25L,42L);
+    }
     @Test void emptyCartIsRejectedWithoutDatabaseWrites(){
         assertThrows(BusinessException.class,()->service.place(customer(),Map.of()));
         verifyNoInteractions(products,orders);

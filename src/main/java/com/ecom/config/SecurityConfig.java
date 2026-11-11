@@ -24,6 +24,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(a->a
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/checkout", "/checkout/**").authenticated()
+                    .requestMatchers("/account/**").hasRole("CUSTOMER")
                     .requestMatchers("/register", "/login", "/css/**", "/js/**", "/img/**", "/").permitAll()
                     .anyRequest().permitAll())
             .formLogin(f->f.loginPage("/login").loginProcessingUrl("/login")

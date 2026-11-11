@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: smartshop123
       MYSQL_ROOT_PASSWORD: root123
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database/tx1_smartshop.sql:/docker-entrypoint-initdb.d/01-init.sql:ro

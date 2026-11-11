@@ -62,6 +62,11 @@
                 <a sec:authorize="isAnonymous()" class="btn btn-outline-light btn-sm" th:href="@{/register}">Đăng ký</a>
                 <span sec:authorize="isAuthenticated()" class="text-white small"
                       th:text="${#authentication.name}"></span>
+                <a sec:authorize="hasRole('CUSTOMER')" class="btn btn-outline-light btn-sm shop-order-history-link"
+                   th:href="@{/account/orders}" href="/account/orders" aria-label="Lịch sử mua hàng">
+                    <span class="shop-order-history-text">Lịch sử mua hàng</span>
+                    <span class="shop-order-history-icon" aria-hidden="true">📦</span>
+                </a>
                 <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="d-inline">
                     <button class="btn btn-outline-light btn-sm" type="submit">Đăng xuất</button>
                 </form>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Lịch sử mua hàng')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container section-pad">
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div><p class="text-primary fw-semibold small mb-1">TÀI KHOẢN KHÁCH HÀNG</p><h1 class="mb-1">Lịch sử mua hàng</h1>
+      <p class="text-muted mb-0">Theo dõi các đơn hàng được đặt bằng tài khoản của bạn.</p></div>
+    <a class="btn btn-outline-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
+  </div>
+  <div class="alert alert-warning" th:if="${param.notFound}">Không tìm thấy đơn hàng hoặc đơn hàng không thuộc tài khoản của bạn.</div>
+  <section class="card border-0 shadow-sm" th:if="${!orders.empty}">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th class="ps-3">Mã đơn hàng</th><th>Ngày đặt</th><th>Người nhận</th><th>Tổng tiền</th><th>Trạng thái</th><th class="text-end pe-3">Chi tiết</th></tr></thead>
+        <tbody><tr th:each="o : ${orders}">
+          <td class="ps-3 fw-semibold" th:text="'DH-' + ${o.id}">DH-1</td>
+          <td th:text="${#temporals.format(o.createdAt,'dd/MM/yyyy HH:mm')}">11/11/2026</td>
+          <td><div class="fw-semibold" th:text="${o.customerName}">Khách hàng</div><small class="text-muted" th:text="${o.phone}">Số điện thoại</small></td>
+          <td class="fw-semibold text-nowrap" th:text="${#numbers.formatDecimal(o.total,0,'POINT',0,'COMMA')} + ' ₫'">0 ₫</td>
+          <td>
+            <span class="badge rounded-pill text-bg-warning" th:if="${o.status == 'PENDING'}">Chờ xác nhận</span>
+            <span class="badge rounded-pill text-bg-info" th:if="${o.status == 'CONFIRMED'}">Đã xác nhận</span>
+            <span class="badge rounded-pill text-bg-primary" th:if="${o.status == 'SHIPPED'}">Đang giao</span>
+            <span class="badge rounded-pill text-bg-success" th:if="${o.status == 'COMPLETED'}">Đã hoàn thành</span>
+            <span class="badge rounded-pill text-bg-secondary" th:if="${o.status == 'CANCELLED'}">Đã hủy</span>
+          </td>
+          <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" th:href="@{/account/orders/{id}(id=${o.id})}">Xem chi tiết</a></td>
+        </tr></tbody>
+      </table>
+    </div>
+  </section>
+  <section class="card border-0 shadow-sm text-center py-5 px-3" th:if="${orders.empty}">
+    <div class="display-5 mb-2" aria-hidden="true">🧾</div><h2 class="h4">Bạn chưa có đơn hàng nào</h2>
+    <p class="text-muted">Các đơn hàng đặt khi bạn đăng nhập sẽ được lưu và hiển thị tại đây.</p>
+    <a class="btn btn-primary align-self-center" th:href="@{/products}">Khám phá sản phẩm</a>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

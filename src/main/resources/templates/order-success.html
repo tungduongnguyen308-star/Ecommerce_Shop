@@ -1,1 +1,18 @@
-<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Đặt hàng thành công')}"></head><body><nav th:replace="~{fragments :: nav}"></nav><main class="container section-pad text-center"><div class="success-symbol">✓</div><div class="eyebrow text-primary">ORDER CONFIRMED</div><h1>Đặt hàng thành công!</h1><p class="lead text-muted">Mã đơn hàng của bạn là <strong th:text="'#'+${orderId}"></strong>. Admin có thể xem đơn hàng trong dashboard.</p><a class="btn btn-primary btn-lg mt-3" th:href="@{/products}">Tiếp tục mua sắm</a></main><footer th:replace="~{fragments :: footer}"></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Đặt hàng thành công')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container section-pad text-center">
+  <div class="success-symbol">✓</div>
+  <div class="eyebrow text-primary">ORDER CONFIRMED</div>
+  <h1>Đặt hàng thành công!</h1>
+  <p class="lead text-muted">Mã đơn hàng của bạn là <strong th:text="'#'+${orderId}"></strong>. Bạn có thể theo dõi tình trạng đơn hàng trong tài khoản.</p>
+  <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+    <a sec:authorize="hasRole('CUSTOMER')" class="btn btn-primary btn-lg" th:href="@{/account/orders}">Xem lịch sử đơn hàng</a>
+    <a class="btn btn-outline-primary btn-lg" th:href="@{/products}">Tiếp tục mua sắm</a>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -137,7 +137,7 @@ Trình duyệt (Bootstrap/Thymeleaf/JavaScript)
 - Đặc tả luồng chính/ngoại lệ tại `docs/USE_CASE_SPECIFICATIONS.md`.
 - Đối chiếu rubric tại `docs/RUBRIC_CHECKLIST.md`.
 - Bản báo cáo và slide dự thảo, nếu có trong `deliverables/`, **cần cập nhật theo mẫu BTL chính thức của trường**; không coi đó là bản chốt đã kiểm chứng.
-- Không có thanh toán thật, tài khoản riêng cho khách hàng hoặc chatbot AI.
+- Chưa tích hợp cổng thanh toán thật hoặc chatbot AI; khách hàng sử dụng tài khoản đăng ký trong hệ thống.
 - Phần làm sạch này chưa thể xác nhận Maven build, Docker integration test hoặc chạy giao diện trong môi trường hiện tại: **hãy chạy và kiểm tra trên IntelliJ trước khi nộp**.
 
 
@@ -148,6 +148,7 @@ New customer features in this version:
 - Login/logout through Spring Security; the existing administrator role remains protected under `/admin/**`.
 - Product browsing and cart operations remain public. `/checkout` requires authentication; Spring Security stores the original checkout URL and returns the customer there after successful login. The cart remains in the HTTP session during authentication.
 - Customer profile data is stored in `app_users`; orders created by signed-in customers store `orders.customer_user_id`.
+- Customers can open `/account/orders` to view their own order history and `/account/orders/{id}` to view order items and delivery details. The server checks order ownership by both order ID and customer user ID; customer routes require the `CUSTOMER` role.
 - Product listing supports minimum/maximum price and sorting by price or name, in addition to existing category and keyword filters.
 
 ### Database update

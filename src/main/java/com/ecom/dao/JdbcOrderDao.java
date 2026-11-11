@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 @Repository
 public class JdbcOrderDao implements OrderDao {
     private final JdbcTemplate jdbc;
@@ -28,6 +29,19 @@ public class JdbcOrderDao implements OrderDao {
     @Override public List<OrderSummary> findAll(){return jdbc.query("SELECT id,customer_name,email,phone,address,total,status,created_at FROM orders ORDER BY id DESC",
             (r,i)->new OrderSummary(r.getLong("id"),r.getString("customer_name"),r.getString("email"),r.getString("phone"),
                     r.getString("address"),r.getBigDecimal("total"),r.getString("status"),r.getTimestamp("created_at").toLocalDateTime()));}
+    @Override public List<OrderSummary> findByCustomerUserId(long customerUserId){
+        return jdbc.query("SELECT id,customer_name,email,phone,address,total,status,created_at FROM orders WHERE customer_user_id=? ORDER BY created_at DESC,id DESC",
+                (r,i)->mapOrderSummary(r),customerUserId);
+    }
+    @Override public Optional<OrderSummary> findByIdAndCustomerUserId(long orderId,long customerUserId){
+        var found=jdbc.query("SELECT id,customer_name,email,phone,address,total,status,created_at FROM orders WHERE id=? AND customer_user_id=?",
+                (r,i)->mapOrderSummary(r),orderId,customerUserId);
+        return found.stream().findFirst();
+    }
+    private OrderSummary mapOrderSummary(java.sql.ResultSet r) throws java.sql.SQLException {
+        return new OrderSummary(r.getLong("id"),r.getString("customer_name"),r.getString("email"),r.getString("phone"),
+                r.getString("address"),r.getBigDecimal("total"),r.getString("status"),r.getTimestamp("created_at").toLocalDateTime());
+    }
     @Override public List<OrderItem> findItems(long orderId){return jdbc.query("SELECT product_id,product_name,quantity,unit_price,line_total FROM order_items WHERE order_id=?",
             (r,i)->new OrderItem(r.getLong("product_id"),r.getString("product_name"),r.getInt("quantity"),r.getBigDecimal("unit_price"),r.getBigDecimal("line_total")),orderId);}
     @Override public String findStatusForUpdate(long orderId){

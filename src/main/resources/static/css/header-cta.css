@@ -63,6 +63,7 @@
 .shop-cart-link { display: inline-flex; align-items: center; gap: 7px; padding: 9px 10px; }
 .shop-admin-link { padding: 10px; }
 .shop-admin-icon { display: none; }
+.shop-order-history-icon { display: none; }
 /* Giữ bộ lọc danh mục trong sidebar; bỏ form tìm kiếm lớn giữa trang. */
 .catalog-page-with-header-search .catalog-top-heading { margin-bottom: 24px; }
 @media (max-width: 1199.98px) {
@@ -90,6 +91,9 @@
   .shop-category-menu { min-width:min(285px, calc(100vw - 24px)); }
 }
 @media (max-width: 480px) {
+  .shop-order-history-link { padding: 6px 8px; }
+  .shop-order-history-text { display:none; }
+  .shop-order-history-icon { display:inline; }
   .shop-admin-link .shop-action-text { display:none; }
   .shop-admin-icon { display:inline; }
   .shop-cart-link .shop-action-text { display:none; }
