@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="vi" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Trang chủ')}"></head><body>
+<nav th:replace="~{fragments :: nav}"></nav><div th:replace="~{fragments :: alerts}"></div>
+<!-- Banner khuyến mãi trang chủ -->
+<section class="promo-section" aria-label="Chương trình khuyến mãi">
+  <div class="container">
+    <div class="promo-carousel" id="ecommerce-promo-carousel" aria-roledescription="carousel" aria-label="Banner quảng bá Ecommerce Shop">
+      <div class="promo-grid" id="ecommerce-promo-grid" aria-live="polite">
+        <a class="promo-card is-active" th:href="@{/products}" href="/products"
+           aria-label="Khám phá sản phẩm công nghệ và đồ gia dụng">
+          <img th:src="@{/img/banners/banner-cong-nghe.webp}"
+               src="/img/banners/banner-cong-nghe.webp"
+               alt="Siêu sale công nghệ: laptop, màn hình và đồ gia dụng"
+               width="740" height="308" fetchpriority="high">
+          <span class="promo-mobile-label">Siêu sale công nghệ <span aria-hidden="true">→</span></span>
+        </a>
+        <a class="promo-card" th:href="@{/products}" href="/products"
+           aria-label="Khám phá các sản phẩm gia dụng cho ngôi nhà tiện nghi">
+          <img th:src="@{/img/banners/banner-gia-dung.webp}"
+               src="/img/banners/banner-gia-dung.webp"
+               alt="Đại tiệc gia dụng: nhà tiện nghi, giá siêu tốt"
+               width="726" height="308" loading="lazy">
+          <span class="promo-mobile-label">Đại tiệc gia dụng <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+      <button type="button" class="promo-nav promo-prev" aria-label="Banner trước" data-promo-prev>
+        <span aria-hidden="true">&#10094;</span>
+      </button>
+      <button type="button" class="promo-nav promo-next" aria-label="Banner tiếp theo" data-promo-next>
+        <span aria-hidden="true">&#10095;</span>
+      </button>
+      <div class="promo-dots" role="group" aria-label="Chọn banner">
+        <button type="button" class="promo-dot is-active" aria-label="Xem banner công nghệ" aria-pressed="true" data-promo-dot="0"></button>
+        <button type="button" class="promo-dot" aria-label="Xem banner gia dụng" aria-pressed="false" data-promo-dot="1"></button>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="featured-categories-home section-pad" aria-labelledby="featured-category-title">
+  <div class="container">
+    <div class="featured-categories-shell">
+      <div class="featured-categories-header">
+        <div><span class="featured-categories-kicker">KHÁM PHÁ SẢN PHẨM</span><h2 id="featured-category-title">Danh mục nổi bật</h2></div>
+        <a th:href="@{/products}" href="/products" class="featured-categories-all">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="featured-categories-grid">
+        <a class="featured-category-item" th:each="category : ${featuredCategories}"
+           th:href="@{/products(categoryId=${category.id},keyword=${category.keyword})}" href="/products"
+           th:aria-label="'Xem sản phẩm '+${category.name}">
+          <div class="featured-category-media">
+            <img th:src="${category.image}" th:alt="'Hình minh họa '+${category.name}"
+                 loading="lazy" width="486" height="270">
+          </div>
+          <div class="featured-category-copy"><h3 th:text="${category.name}">Tên danh mục</h3></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section-pad bg-soft home-featured-results"><div class="container"><div class="section-head"><div><div class="eyebrow text-primary">SẢN PHẨM ĐỀ XUẤT</div><h2>Lựa chọn dành cho bạn</h2></div></div>
+<div class="row g-4"><div class="col-sm-6 col-lg-3" th:each="p : ${featured}"><div class="product-card"><a th:href="@{/products/{id}(id=${p.id})}"><img th:src="${p.imageUrl}" th:alt="${p.name}"></a><div class="product-info"><span class="tiny-label" th:text="${p.categoryName}">Danh mục</span><a th:href="@{/products/{id}(id=${p.id})}" class="product-name" th:text="${p.name}">Tên</a><div class="price" th:text="${#numbers.formatDecimal(p.price,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</div><div class="home-buy-area">
+  <small class="home-stock" th:text="'Còn '+${p.stock}+' sản phẩm'">Còn hàng</small>
+  <form class="home-add-form" th:action="@{/cart/add}" method="post">
+    <input type="hidden" name="productId" th:value="${p.id}">
+    <button class="btn btn-primary home-cart-button" type="submit" th:disabled="${p.stock == 0}">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.4 12.2a2 2 0 0 0 2 1.6h9.6a2 2 0 0 0 2-1.6L23 6H6"/>
+      </svg>
+      <span>Thêm vào giỏ</span>
+    </button>
+  </form>
+</div></div></div></div></div>
+</div></section>
+<!-- Nút thêm vào giỏ trên trang chủ -->
+<style>
+  .home-featured-results .product-card { display: flex; flex-direction: column; height: 100%; }
+  .home-featured-results .product-card > a { display: block; }
+  .home-featured-results .product-info { display: flex; flex-direction: column; flex: 1; }
+  .home-featured-results .home-buy-area { display: flex; flex-direction: column; gap: 12px; margin-top: auto; padding-top: 18px; }
+  .home-featured-results .home-stock { font-size: .9rem; font-weight: 500; color: #66738e; }
+  .home-featured-results .home-add-form { display: flex; justify-content: center; width: 100%; margin: 0; }
+  .home-featured-results .home-cart-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    width: min(88%, 260px); min-height: 48px;
+    padding: 10px 16px; border: 1px solid #315efb; border-radius: 999px;
+    background: #315efb; color: #fff; font-size: 1.02rem; font-weight: 750;
+    line-height: 1.25; white-space: nowrap;
+    box-shadow: 0 7px 16px rgba(49,94,251,.18);
+    transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .home-featured-results .home-cart-button:hover:not(:disabled) {
+    background: #244ce0; border-color: #244ce0; transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(49,94,251,.25);
+  }
+  .home-featured-results .home-cart-button:focus-visible { outline: 3px solid #8aabff; outline-offset: 3px; }
+  .home-featured-results .home-cart-button:disabled { background: #9ca9c2; border-color: #9ca9c2; box-shadow: none; }
+  .home-featured-results .home-cart-button svg { flex: 0 0 auto; }
+  @media (max-width: 420px) { .home-featured-results .home-cart-button { width: 96%; font-size: .98rem; } }
+  @media (prefers-reduced-motion: reduce) { .home-featured-results .home-cart-button { transition: none; } }
+</style>
+<!-- noi dung huong toi khach hang, khong hien thong tin do an/cong nghe -->
+<section class="shopping-cta-section" aria-labelledby="shopping-cta-title">
+  <div class="container">
+    <div class="shopping-cta-content">
+      <div class="shopping-cta-copy">
+        <div class="shopping-cta-eyebrow">KHÁM PHÁ THẾ GIỚI CÔNG NGHỆ</div>
+        <h2 id="shopping-cta-title">Mua sắm dễ dàng – Lựa chọn đa dạng</h2>
+        <p>Khám phá điện thoại, laptop, máy tính bảng, máy tính để bàn, phụ kiện và thiết bị điện máy.
+           Dễ dàng tìm kiếm, xem thông tin sản phẩm và đặt hàng chỉ với vài thao tác.</p>
+      </div>
+      <a class="btn btn-primary btn-lg shopping-cta-button" th:href="@{/products}" href="/products">
+        Khám phá sản phẩm <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+<footer th:replace="~{fragments :: footer}"></footer><script th:src="@{/js/promo-banner.js}" src="/js/promo-banner.js" defer></script>
+</body></html>

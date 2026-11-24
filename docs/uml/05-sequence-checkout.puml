@@ -1,0 +1,41 @@
+@startuml
+autonumber
+actor "Khách hàng" as Buyer
+boundary "CheckoutController" as C
+control "OrderService" as S
+entity "ProductDao (JDBC)" as P
+entity "OrderDao (JDBC)" as O
+database "MySQL" as DB
+Buyer -> C: POST /checkout (thông tin, session cart)
+C -> C: Bean Validation
+alt Form không hợp lệ
+ C --> Buyer: Hiển thị lỗi trường dữ liệu
+else Form hợp lệ
+ C -> S: place(form, cart) @Transactional
+ loop Mỗi sản phẩm
+  S -> P: findById(id)
+  P -> DB: SELECT product
+  DB --> P: Product
+  P --> S: Product
+  S -> P: decreaseStock(id, quantity)
+  P -> DB: UPDATE stock WHERE stock >= quantity
+  DB --> P: rowCount
+ end
+ alt Hết hàng hoặc giỏ trống
+  S --> C: BusinessException
+  note over S,DB: Transaction ROLLBACK (không trừ tồn kho)
+  C --> Buyer: Hiện lỗi đặt hàng
+ else Đủ hàng
+  S -> O: insertOrder(form, total)
+  O -> DB: INSERT orders
+  DB --> O: orderId
+  loop Mỗi dòng hàng
+   S -> O: insertItem(orderId, line)
+   O -> DB: INSERT order_items
+  end
+  S --> C: orderId (COMMIT)
+  C -> C: clear(cart)
+  C --> Buyer: Redirect /order/success/{id}
+ end
+end
+@enduml

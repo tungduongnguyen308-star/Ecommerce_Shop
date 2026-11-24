@@ -1,0 +1,37 @@
+@startuml
+title Ecommerce_Shop - Cập nhật số lượng giỏ hàng
+hide footbox
+autonumber
+actor "Khách hàng" as Buyer
+boundary "cart.html + cart-live.js" as UI
+boundary "CartController" as Controller
+control "CartService (session)" as Cart
+control "ProductService" as Product
+entity "ProductDao (JDBC)" as Dao
+database "MySQL" as DB
+Buyer -> UI: Sửa số lượng / nhấn X để xóa
+UI -> Controller: POST /cart/api/update (productId, quantity, CSRF)
+Controller -> Cart: update(session, productId, quantity)
+alt quantity = 0
+  Cart -> Cart: Xóa dòng khỏi giỏ session
+else quantity > 0
+  Cart -> Product: get(productId)
+  Product -> Dao: findById(productId)
+  Dao -> DB: SELECT products WHERE id = ?
+  DB --> Dao: Thông tin giá / tồn kho
+  Dao --> Product: Product
+  Product --> Cart: Product
+  alt Không đủ tồn kho hoặc số lượng không hợp lệ
+    Cart --> Controller: BusinessException
+    Controller --> UI: HTTP 400 + JSON thông báo
+    UI --> Buyer: Khôi phục số lượng, hiển thị lỗi
+  else Hợp lệ
+    Cart -> Cart: Cập nhật giỏ trong session
+  end
+end
+opt Cập nhật thành công
+  Controller --> UI: JSON {ok, quantity, total}
+  UI -> UI: Tính lại thành tiền, tạm tính
+  UI --> Buyer: Hiển thị số liệu mới
+end
+@enduml

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Giỏ hàng')}"></head>
+<body class="cart-live-page">
+<header th:replace="~{fragments :: nav}"></header>
+<div th:replace="~{fragments :: alerts}"></div>
+
+<main id="cart-live-root" class="container section-pad cart-live-main"
+      th:attr="data-update-url=@{/cart/api/update}">
+  <div class="cart-page-heading">
+    <div>
+      <div class="eyebrow text-primary">GIỎ HÀNG</div>
+      <h1>Giỏ hàng của bạn</h1>
+    </div>
+    <a class="cart-keep-shopping" th:href="@{/products}" href="/products">
+      <span aria-hidden="true">←</span> Tiếp tục mua sắm
+    </a>
+  </div>
+
+  <div id="cart-live-error" class="alert alert-danger d-none" role="alert" aria-live="polite"></div>
+
+  <div id="cart-empty-state" class="empty-state" th:if="${lines.empty}">
+    <h3>Giỏ hàng đang trống</h3>
+    <p>Hãy chọn thêm các sản phẩm bạn yêu thích nhé.</p>
+    <a th:href="@{/products}" href="/products" class="btn btn-primary cart-empty-cta">Tiếp tục mua sắm →</a>
+  </div>
+
+  <section id="cart-live-content" class="row g-4" th:unless="${lines.empty}">
+    <div class="col-lg-8">
+      <div class="table-responsive table-surface cart-table-surface">
+        <table class="table align-middle cart-live-table">
+          <thead>
+            <tr>
+              <th scope="col">Sản phẩm</th>
+              <th scope="col">Đơn giá</th>
+              <th scope="col">Số lượng</th>
+              <th scope="col">Thành tiền</th>
+              <th scope="col"><span class="visually-hidden">Xóa sản phẩm</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="line : ${lines}" class="cart-live-row"
+                th:attr="data-product-id=${line.product.id},data-unit-price=${line.unitPrice}">
+              <td>
+                <a class="cart-product-link" th:href="@{/products/{id}(id=${line.product.id})}">
+                  <img class="cart-thumb" th:src="${line.product.imageUrl}" th:alt="${line.product.name}">
+                  <span class="cart-product-info">
+                    <strong th:text="${line.product.name}">Tên sản phẩm</strong>
+                    <small th:text="${line.product.categoryName}">Danh mục</small>
+                  </span>
+                </a>
+              </td>
+              <td class="cart-price-cell"
+                  th:text="${#numbers.formatDecimal(line.product.price,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</td>
+              <td>
+                <!-- Có nút cập nhật dự phòng khi trình duyệt tắt JavaScript. -->
+                <form class="cart-quantity-form" th:action="@{/cart/update}" method="post">
+                  <input type="hidden" name="productId" th:value="${line.product.id}">
+                  <label class="visually-hidden" th:for="|cart-quantity-${line.product.id}|"
+                         th:text="'Số lượng '+${line.product.name}">Số lượng</label>
+                  <input class="form-control cart-quantity-input" type="number" inputmode="numeric"
+                         name="quantity" min="1" max="100" step="1" required
+                         th:id="|cart-quantity-${line.product.id}|" th:value="${line.quantity}">
+                  <noscript><button class="btn btn-sm btn-outline-primary" type="submit">Cập nhật</button></noscript>
+                </form>
+                <span class="cart-update-state" aria-live="polite"></span>
+              </td>
+              <td class="cart-line-subtotal fw-bold">
+                <span th:text="${#numbers.formatDecimal(line.subtotal,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</span>
+                <small class="d-block text-success" th:if="${line.discountAmount.signum() > 0}"
+                       th:text="'Đã giảm '+${#numbers.formatDecimal(line.discountAmount,0,'POINT',0,'COMMA')}+' ₫'">Đã giảm</small>
+              </td>
+              <td class="cart-remove-cell">
+                <form class="cart-remove-form" th:action="@{/cart/update}" method="post">
+                  <input type="hidden" name="productId" th:value="${line.product.id}">
+                  <input type="hidden" name="quantity" value="0">
+                  <button type="submit" class="cart-remove-btn"
+                          th:attr="aria-label=|Xóa ${line.product.name} khỏi giỏ hàng|"
+                          title="Xóa khỏi giỏ hàng">&times;</button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <a class="cart-keep-shopping cart-keep-shopping-bottom" th:href="@{/products}" href="/products">
+        <span aria-hidden="true">←</span> Tiếp tục mua sắm
+      </a>
+    </div>
+
+    <div class="col-lg-4">
+      <aside class="summary-box cart-summary-box">
+        <h4>Tóm tắt đơn hàng</h4>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="coupon-code">Mã khuyến mãi</label>
+          <form th:action="@{/cart/coupon}" method="post" class="d-flex gap-2">
+            <input id="coupon-code" name="code" class="form-control" placeholder="Nhập mã giảm giá" th:value="${couponCode}">
+            <button class="btn btn-outline-primary" type="submit">Áp dụng</button>
+          </form>
+          <form th:if="${couponCode != null}" th:action="@{/cart/coupon/remove}" method="post" class="mt-2">
+            <span class="text-success small" th:text="'Đã áp dụng: '+${couponCode}"></span>
+            <button class="btn btn-link btn-sm text-danger p-0 ms-2" type="submit">Bỏ mã</button>
+          </form>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2 gap-3">
+          <span>Tạm tính sau giảm sản phẩm</span>
+          <strong id="cart-live-total" class="price" th:text="${#numbers.formatDecimal(total,0,'POINT',0,'COMMA')}+' ₫'">0 ₫</strong>
+        </div>
+        <div class="d-flex justify-content-between py-2 text-success" id="coupon-discount-row" th:classappend="${couponDiscount.signum() <= 0} ? ' d-none' : ''">
+          <span>Giảm theo mã</span><strong id="coupon-discount-value" th:text="'-'+${#numbers.formatDecimal(couponDiscount,0,'POINT',0,'COMMA')}+' ₫'"></strong>
+        </div>
+        <div class="d-flex justify-content-between border-top pt-3 mb-4">
+          <strong>Tổng thanh toán</strong><strong id="cart-grand-total" class="price" th:text="${#numbers.formatDecimal(grandTotal,0,'POINT',0,'COMMA')}+' ₫'"></strong>
+        </div>
+        <a id="cart-live-checkout" th:href="@{/checkout}" href="/checkout"
+           class="btn btn-primary btn-lg w-100">Tiến hành đặt hàng →</a>
+        <p class="cart-sync-hint" id="cart-live-hint" aria-live="polite"></p>
+      </aside>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/cart-live.js}" src="/js/cart-live.js" defer></script>
+</body>
+</html>

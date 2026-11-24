@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Thông tin khuyến mãi · Ecommerce Shop
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" th:href="@{/css/smartshop.css}"/>
+  <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}"/>
+ </head>
+ <body class="admin-body">
+  <div class="admin-shell">
+   <input class="admin-sidebar-toggle" id="admin-sidebar-toggle" type="checkbox"/>
+   <aside th:replace="~{admin/sidebar :: sidebar('promotions')}">
+   </aside>
+   <label class="admin-sidebar-backdrop" for="admin-sidebar-toggle">
+   </label>
+   <div class="admin-workspace">
+    <header class="admin-topbar">
+     <div class="admin-topbar-left">
+      <label class="admin-mobile-menu" for="admin-sidebar-toggle">
+       ☰
+      </label>
+      <div>
+       <div class="admin-topbar-breadcrumb">
+        Ecommerce Shop
+        <span>
+         /
+        </span>
+        Khuyến mãi
+       </div>
+       <strong th:text="${editId == null ? 'Tạo khuyến mãi' : 'Chỉnh sửa khuyến mãi'}">
+        Khuyến mãi
+       </strong>
+      </div>
+     </div>
+     <a class="admin-topbar-shop" th:href="@{/admin/promotions}">
+      ←
+      <span>
+       Quay lại
+      </span>
+     </a>
+    </header>
+    <main class="admin-page">
+     <div class="alert alert-danger" th:if="${error}" th:text="${error}">
+     </div>
+     <section class="admin-page-heading">
+      <div>
+       <p class="admin-eyebrow">
+        MARKETING & ƯU ĐÃI
+       </p>
+       <h1 th:text="${editId == null ? 'Tạo chương trình khuyến mãi' : 'Cập nhật chương trình'}">
+        Tạo khuyến mãi
+       </h1>
+       <p class="admin-muted mb-0">
+        Nhập thông tin mã giảm giá áp dụng cho cửa hàng.
+       </p>
+      </div>
+     </section>
+     <section class="admin-panel">
+      <form class="row g-3" method="post" th:action="${editId == null ? '/admin/promotions' : '/admin/promotions/' + editId}" th:object="${promotion}">
+       <div class="col-md-6">
+        <label class="form-label">
+         Mã khuyến mãi *
+        </label>
+        <input class="form-control" maxlength="40" placeholder="VD: SALE10" required="" th:field="*{code}"/>
+        <small class="text-muted">
+         3-40 ký tự, chữ, số, _ hoặc -
+        </small>
+       </div>
+       <div class="col-md-6">
+        <label class="form-label">
+         Tên chương trình *
+        </label>
+        <input class="form-control" maxlength="180" placeholder="Ưu đãi tháng 11" required="" th:field="*{name}"/>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Loại giảm giá *
+        </label>
+        <select class="form-select" th:field="*{discountType}">
+         <option value="PERCENT">
+          Theo phần trăm (%)
+         </option>
+         <option value="FIXED">
+          Số tiền cố định (₫)
+         </option>
+        </select>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Giá trị giảm *
+        </label>
+        <input class="form-control" min="1" required="" step="0.01" th:field="*{discountValue}" type="number"/>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Đơn hàng tối thiểu (₫)
+        </label>
+        <input class="form-control" min="0" required="" step="1000" th:field="*{minOrderValue}" type="number"/>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Giảm tối đa (₫, tùy chọn)
+        </label>
+        <input class="form-control" min="0" step="1000" th:field="*{maxDiscount}" type="number"/>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Ngày bắt đầu *
+        </label>
+        <input class="form-control" required="" th:field="*{startDate}" type="date"/>
+       </div>
+       <div class="col-md-4">
+        <label class="form-label">
+         Ngày kết thúc *
+        </label>
+        <input class="form-control" required="" th:field="*{endDate}" type="date"/>
+       </div>
+       <div class="col-md-6">
+        <label class="form-label">
+         Giới hạn lượt sử dụng
+        </label>
+        <input class="form-control" min="1" placeholder="Để trống = không giới hạn" th:field="*{usageLimit}" type="number"/>
+       </div>
+       <div class="col-md-6 d-flex align-items-end">
+        <div class="form-check mb-2">
+         <input class="form-check-input" th:field="*{active}" type="checkbox"/>
+         <label class="form-check-label" for="active">
+          Kích hoạt chương trình
+         </label>
+        </div>
+       </div>
+       <div class="col-12 d-flex gap-2">
+        <button class="btn btn-primary" th:text="${editId == null ? 'Tạo khuyến mãi' : 'Lưu thay đổi'}" type="submit">
+         Lưu
+        </button>
+        <a class="btn btn-outline-secondary" th:href="@{/admin/promotions}">
+         Hủy
+        </a>
+       </div>
+      </form>
+     </section>
+    </main>
+    <div class="admin-page-footer">
+     © Ecommerce Shop
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

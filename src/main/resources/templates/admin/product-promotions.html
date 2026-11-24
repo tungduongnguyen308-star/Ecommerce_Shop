@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Khuyến mãi sản phẩm')}" ></head>
+<body class="admin-body">
+<div class="admin-shell">
+  <input class="admin-sidebar-toggle" id="admin-sidebar-toggle" type="checkbox">
+  <aside th:replace="~{admin/sidebar :: sidebar('product-promotions')}"></aside>
+  <label class="admin-sidebar-backdrop" for="admin-sidebar-toggle"></label>
+  <div class="admin-workspace">
+    <header class="admin-topbar"><div class="admin-topbar-left"><label class="admin-mobile-menu" for="admin-sidebar-toggle">☰</label><div><div class="admin-topbar-breadcrumb">Ecommerce Shop / Giảm giá sản phẩm</div><strong>Giảm giá trực tiếp sản phẩm</strong></div></div><a class="admin-topbar-shop" th:href="@{/admin/promotions}">← Quản lý mã giảm giá</a></header>
+    <main class="admin-page">
+      <div class="alert alert-success" th:if="${success}" th:text="${success}"></div><div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+      <section class="admin-page-heading promo-page-heading"><div><p class="admin-eyebrow">MARKETING & ƯU ĐÃI</p><h1>Khuyến mãi theo sản phẩm</h1><p class="admin-muted">Chọn các mặt hàng cố định để tự động giảm giá, khách không cần nhập mã.</p></div><div class="promo-heading-icon" aria-hidden="true">％</div></section>
+      <section class="admin-panel promo-create-panel mb-4"><div class="admin-panel-heading"><div><span class="promo-section-kicker">THIẾT LẬP ƯU ĐÃI</span><h2>Tạo chương trình giảm giá sản phẩm</h2><p>Điền thông tin và chọn sản phẩm muốn áp dụng.</p></div><span class="promo-panel-icon" aria-hidden="true">＋</span></div>
+        <form method="post" th:action="@{/admin/product-promotions}" class="row g-3 promo-form">
+          <div class="col-md-6"><label class="form-label">Tên chương trình *</label><input name="name" class="form-control" required maxlength="180" placeholder="Ví dụ: Flash sale Laptop"></div>
+          <div class="col-md-3"><label class="form-label">Kiểu giảm</label><select name="discountType" class="form-select"><option value="PERCENT">Phần trăm (%)</option><option value="FIXED">Số tiền (₫) / mỗi sản phẩm</option></select></div>
+          <div class="col-md-3"><label class="form-label">Giá trị giảm *</label><input name="discountValue" type="number" min="1" step="0.01" class="form-control" required></div>
+          <div class="col-md-6"><label class="form-label">Ngày bắt đầu *</label><input name="startDate" type="date" class="form-control" required></div>
+          <div class="col-md-6"><label class="form-label">Ngày kết thúc *</label><input name="endDate" type="date" class="form-control" required></div>
+          <div class="col-12"><div class="promo-product-heading"><label class="form-label fw-semibold mb-0">Chọn sản phẩm áp dụng *</label><span class="promo-help-text">Có thể chọn nhiều sản phẩm</span></div><div class="row g-2 promo-product-grid"><div class="col-md-6" th:each="p : ${products}"><label class="promo-product-option"><input type="checkbox" name="productIds" th:value="${p.id}"><span class="promo-product-name" th:text="${p.name}">Tên sản phẩm</span><small class="promo-product-price" th:text="${#numbers.formatDecimal(p.price,0,'POINT',0,'COMMA')}+' ₫'"></small></label></div></div></div>
+          <div class="col-12 promo-submit-row"><button class="btn btn-primary promo-submit-btn" type="submit">＋ Tạo chương trình giảm giá</button></div>
+        </form>
+      </section>
+      <section class="admin-panel promo-list-panel"><div class="admin-panel-heading"><div><span class="promo-section-kicker">DANH SÁCH QUẢN LÝ</span><h2>Chương trình hiện có</h2><p>Theo dõi thời gian và mức ưu đãi đang được thiết lập.</p></div></div>
+        <div class="table-responsive"><table class="table align-middle admin-table promo-table"><thead><tr><th>Chương trình</th><th>Mức giảm</th><th>Thời hạn</th><th>Sản phẩm</th><th></th></tr></thead><tbody>
+          <tr th:each="promo : ${productPromotions}"><td th:text="${promo.name}"></td><td><span th:if="${promo.discountType == 'PERCENT'}" th:text="${promo.discountValue+'%'}"></span><span th:unless="${promo.discountType == 'PERCENT'}" th:text="${#numbers.formatDecimal(promo.discountValue,0,'POINT',0,'COMMA')}+' ₫'"></span></td><td th:text="${promo.startDate+' - '+promo.endDate}"></td><td th:text="${#lists.size(promo.productIds)}+' sản phẩm'"></td><td><form method="post" th:action="@{/admin/product-promotions/{id}/delete(id=${promo.id})}" onsubmit="return confirm('Xóa chương trình này?')"><button class="btn btn-sm btn-outline-danger">Xóa</button></form></td></tr>
+          <tr th:if="${#lists.isEmpty(productPromotions)}"><td colspan="5" class="text-center text-muted">Chưa có chương trình giảm giá sản phẩm.</td></tr>
+        </tbody></table></div>
+      </section>
+    </main>
+  </div>
+</div>
+</body></html>
